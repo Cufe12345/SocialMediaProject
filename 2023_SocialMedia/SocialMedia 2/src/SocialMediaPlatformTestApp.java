@@ -1,7 +1,11 @@
 import socialmedia.AccountIDNotRecognisedException;
 import socialmedia.BadSocialMedia;
+import socialmedia.HandleNotRecognisedException;
+import socialmedia.SocialMedia;
 import socialmedia.IllegalHandleException;
 import socialmedia.InvalidHandleException;
+import socialmedia.InvalidPostException;
+import socialmedia.PostIDNotRecognisedException;
 import socialmedia.SocialMediaPlatform;
 
 /**
@@ -24,7 +28,7 @@ public class SocialMediaPlatformTestApp {
 	public static void main(String[] args) {
 		System.out.println("The system compiled and started the execution...");
 
-		SocialMediaPlatform platform = new BadSocialMedia();
+		SocialMediaPlatform platform = new SocialMedia();
 
 		assert (platform.getNumberOfAccounts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
 		assert (platform.getTotalOriginalPosts() == 0) : "Innitial SocialMediaPlatform not empty as required.";
@@ -34,6 +38,11 @@ public class SocialMediaPlatformTestApp {
 		Integer id;
 		try {
 			id = platform.createAccount("my_handle");
+			int result = platform.createPost("my_handle", "Pizza");
+			System.out.println(platform.showIndividualPost(result));
+			System.out.println(platform.getTotalOriginalPosts());
+			platform.deletePost(result);
+			System.out.println(platform.getTotalOriginalPosts());
 			assert (platform.getNumberOfAccounts() == 1) : "number of accounts registered in the system does not match";
 
 			platform.removeAccount(id);
@@ -45,6 +54,12 @@ public class SocialMediaPlatformTestApp {
 			assert (false) : "InvalidHandleException thrown incorrectly";
 		} catch (AccountIDNotRecognisedException e) {
 			assert (false) : "AccountIDNotRecognizedException thrown incorrectly";
+		} catch (InvalidPostException e) {
+			assert (false) : "sjjudj";
+		} catch (HandleNotRecognisedException e) {
+			assert (false) : "iuiisdi";
+		} catch (PostIDNotRecognisedException e) {
+			assert (false) : "jnsikd";
 		}
 
 	}
