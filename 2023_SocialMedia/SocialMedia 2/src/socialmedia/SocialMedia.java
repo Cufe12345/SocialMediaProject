@@ -13,45 +13,112 @@ public class SocialMedia implements SocialMediaPlatform {
 
 	@Override
 	public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
-		Account newAccount = new Account(handle);
+		for (Account a : Account.allAccounts){
+            if (a.getHandle() == handle) // Lowercase maybe
+            {
+                throw new IllegalHandleException("This handle is already being used by another account.");
+            }
+        }
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")){ // The system limit of characters may not be 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+        }
+        Account newAccount = new Account(handle);
+        return newAccount.getId();
         
 	}
 
 	@Override
 	public int createAccount(String handle, String description) throws IllegalHandleException, InvalidHandleException {
-		// TODO Auto-generated method stub
-		return 0;
+		for (Account a : Account.allAccounts){
+            if (a.getHandle() == handle) // Lowercase maybe
+            {
+                throw new IllegalHandleException("This handle is already being used by another account.");
+            }
+        }
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")){ // The system limit of characters may not be 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+        }
+        Account newAccount = new Account(handle, description);
+        return newAccount.getId();
 	}
 
 	@Override
 	public void removeAccount(int id) throws AccountIDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		for (Account a: Account.allAccounts){
+            if (a.getId() == id)
+            {
+                Account.allAccounts.remove(a); // This may not work?
+				return;
+            }
+        }
+		throw new AccountIDNotRecognisedException("This ID was not recognised.");
 	}
 
 	@Override
 	public void removeAccount(String handle) throws HandleNotRecognisedException {
-		// TODO Auto-generated method stub
+		for (Account a: Account.allAccounts){
+            if (a.getHandle() == handle)
+            {
+                Account.allAccounts.remove(a); // This may not work?
+                return; //  This might be a bad way of doing it, otherwise have a boolean variable
+            }
+        }
+        throw new HandleNotRecognisedException("The handle was not recognised.");
+
 
 	}
 
 	@Override
 	public void changeAccountHandle(String oldHandle, String newHandle)
 			throws HandleNotRecognisedException, IllegalHandleException, InvalidHandleException {
-		// TODO Auto-generated method stub
+		Account tempAccount = null;
+		for (Account a: Account.allAccounts){
+			if (a.getHandle() == newHandle)
+			{
+				throw new IllegalHandleException("Handle already taken");
+			}
+			if (a.getHandle() == oldHandle)
+			{
+				tempAccount = a;
+			}
+		}
+		if (newHandle.length() == 0 || newHandle.length() > 100 || newHandle.contains(" ")){ // The system limit of characters may not be 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+        }
+		if (tempAccount == null){
+			throw new HandleNotRecognisedException("Account handle not recognised");
+		}
+		else{
+			tempAccount.setHandle(newHandle);
+		}
 
 	}
 
 	@Override
 	public void updateAccountDescription(String handle, String description) throws HandleNotRecognisedException {
-		// TODO Auto-generated method stub
-
+        for (Account a: Account.allAccounts){
+            if (a.getHandle() == handle)
+            {
+                a.setDescription(description); // This may not work?
+                return; //  This might be a bad way of doing it, otherwise have a boolean variable
+            }
+        }
+        throw new HandleNotRecognisedException("The handle was not recognised.");
 	}
 
 	@Override
 	public String showAccount(String handle) throws HandleNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+        String message = "";
+        for (Account a: Account.allAccounts)
+        {
+            if (a.getHandle() == handle)
+            {
+                message = String.format("ID: %1$s \n Handle: %2$s \n Description: %3$s \n Post count: \n Endorse count: ", a.getId(),a.getHandle(), a.getDescription()); // Do post/endorsement count later
+                return message;
+            }
+        }
+		throw new HandleNotRecognisedException("This handle was not recognised.");
+		
 	}
 
 	@Override
@@ -95,8 +162,7 @@ public class SocialMedia implements SocialMediaPlatform {
 
 	@Override
 	public int getNumberOfAccounts() {
-		// TODO Auto-generated method stub
-		return 0;
+		return Account.allAccounts.size();
 	}
 
 	@Override
