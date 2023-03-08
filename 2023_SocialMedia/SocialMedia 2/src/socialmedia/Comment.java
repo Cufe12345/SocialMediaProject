@@ -3,6 +3,7 @@ package socialmedia;
 public class Comment extends Post {
     private int parentId;
 
+
     public Comment(String handle, String message, int parentId) {
         super(handle, message);
         this.parentId = parentId;
