@@ -6,9 +6,10 @@ public class Post {
     private int id;
     private String handle;
     private String message;
-    private boolean emptyPost;
     public static ArrayList<Post> allPosts = new ArrayList<Post>();
     public static int nextId;
+    public static Post emptyPost = new Post(null,
+            "The original content was removed from the system and is no longer available.");
 
 
     public Post(String handle, String message) {
@@ -31,13 +32,7 @@ public class Post {
         return message;
     }
 
-    public boolean getEmptyPost() {
-        return emptyPost;
-    }
-
-    public void setEmptyPost(boolean value) {
-        emptyPost = value;
-    }
+   
     public int getNumberOfEndorsements(){
         int endorsementCount=0;
         for (Post post : allPosts){

@@ -1,6 +1,7 @@
 package socialmedia;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * BadSocialMedia is a minimally compiling, but non-functioning implementor of
@@ -11,116 +12,135 @@ import java.io.IOException;
  */
 public class SocialMedia implements SocialMediaPlatform {
 
-	@Override
-	public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
-		for (Account a : Account.allAccounts){
+    @Override
+    public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
+        for (Account a : Account.allAccounts) {
             if (a.getHandle() == handle) // Lowercase maybe
             {
                 throw new IllegalHandleException("This handle is already being used by another account.");
             }
         }
-        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")){ // The system limit of characters may not be 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // The system limit of characters
+                                                                                     // may not be 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
+                                                                        // condition.
         }
         Account newAccount = new Account(handle);
         return newAccount.getId();
-        
-	}
 
-	@Override
-	public int createAccount(String handle, String description) throws IllegalHandleException, InvalidHandleException {
-		for (Account a : Account.allAccounts){
+    }
+
+    @Override
+    public int createAccount(String handle, String description) throws IllegalHandleException, InvalidHandleException {
+        for (Account a : Account.allAccounts) {
             if (a.getHandle() == handle) // Lowercase maybe
             {
                 throw new IllegalHandleException("This handle is already being used by another account.");
             }
         }
-        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")){ // The system limit of characters may not be 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // The system limit of characters
+                                                                                     // may not be 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
+                                                                        // condition.
         }
         Account newAccount = new Account(handle, description);
         return newAccount.getId();
-	}
+    }
 
-	@Override
-	public void removeAccount(int id) throws AccountIDNotRecognisedException {
-		for (Account a: Account.allAccounts){
-            if (a.getId() == id)
-            {
+    @Override
+    public void removeAccount(int id) throws AccountIDNotRecognisedException {
+        for (Account a : Account.allAccounts) {
+            if (a.getId() == id) {
                 Account.allAccounts.remove(a); // This may not work?
-				return;
+                return;
             }
         }
-		throw new AccountIDNotRecognisedException("This ID was not recognised.");
-	}
+        throw new AccountIDNotRecognisedException("This ID was not recognised.");
+    }
 
-	@Override
-	public void removeAccount(String handle) throws HandleNotRecognisedException {
-		for (Account a: Account.allAccounts){
-            if (a.getHandle() == handle)
-            {
+    @Override
+    public void removeAccount(String handle) throws HandleNotRecognisedException {
+        for (Account a : Account.allAccounts) {
+            if (a.getHandle() == handle) {
                 Account.allAccounts.remove(a); // This may not work?
-                return; //  This might be a bad way of doing it, otherwise have a boolean variable
+                return; // This might be a bad way of doing it, otherwise have a boolean variable
             }
         }
         throw new HandleNotRecognisedException("The handle was not recognised.");
 
+    }
 
-	}
-
-	@Override
-	public void changeAccountHandle(String oldHandle, String newHandle)
-			throws HandleNotRecognisedException, IllegalHandleException, InvalidHandleException {
-		Account tempAccount = null;
-		for (Account a: Account.allAccounts){
-			if (a.getHandle() == newHandle)
-			{
-				throw new IllegalHandleException("Handle already taken");
-			}
-			if (a.getHandle() == oldHandle)
-			{
-				tempAccount = a;
-			}
-		}
-		if (newHandle.length() == 0 || newHandle.length() > 100 || newHandle.contains(" ")){ // The system limit of characters may not be 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each condition.
+    @Override
+    public void changeAccountHandle(String oldHandle, String newHandle)
+            throws HandleNotRecognisedException, IllegalHandleException, InvalidHandleException {
+        Account tempAccount = null;
+        for (Account a : Account.allAccounts) {
+            if (a.getHandle() == newHandle) {
+                throw new IllegalHandleException("Handle already taken");
+            }
+            if (a.getHandle() == oldHandle) {
+                tempAccount = a;
+            }
         }
-		if (tempAccount == null){
-			throw new HandleNotRecognisedException("Account handle not recognised");
-		}
-		else{
-			tempAccount.setHandle(newHandle);
-		}
+        if (newHandle.length() == 0 || newHandle.length() > 100 || newHandle.contains(" ")) { // The system limit of
+                                                                                              // characters may not be
+                                                                                              // 100 characters.
+            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
+                                                                        // condition.
+        }
+        if (tempAccount == null) {
+            throw new HandleNotRecognisedException("Account handle not recognised");
+        } else {
+            tempAccount.setHandle(newHandle);
+        }
 
-	}
+    }
 
-	@Override
-	public void updateAccountDescription(String handle, String description) throws HandleNotRecognisedException {
-        for (Account a: Account.allAccounts){
-            if (a.getHandle() == handle)
-            {
+    @Override
+    public void updateAccountDescription(String handle, String description) throws HandleNotRecognisedException {
+        for (Account a : Account.allAccounts) {
+            if (a.getHandle() == handle) {
                 a.setDescription(description); // This may not work?
-                return; //  This might be a bad way of doing it, otherwise have a boolean variable
+                return; // This might be a bad way of doing it, otherwise have a boolean variable
             }
         }
         throw new HandleNotRecognisedException("The handle was not recognised.");
-	}
+    }
 
-	@Override
-	public String showAccount(String handle) throws HandleNotRecognisedException {
+    // Callum Add Post Count
+    @Override
+    public String showAccount(String handle) throws HandleNotRecognisedException {
         String message = "";
-        for (Account a: Account.allAccounts)
-        {
-            if (a.getHandle() == handle)
-            {
-                message = String.format("ID: %1$s \n Handle: %2$s \n Description: %3$s \n Post count: \n Endorse count: ", a.getId(),a.getHandle(), a.getDescription()); // Do post/endorsement count later
+        int commentCount = 0;
+        int endorsementCount = 0;
+        int postCount = 0;
+        for (Post post : Post.allPosts) {
+            if (post.getHandle() == handle) {
+                if (post instanceof Endorsement) {
+                    endorsementCount++;
+                    continue;
+                }
+                if (post instanceof Comment) {
+                    commentCount++;
+                    continue;
+                }
+                postCount++;
+            }
+        }
+        for (Account a : Account.allAccounts) {
+            if (a.getHandle() == handle) {
+                message = String.format(
+                        "ID: %1$s \n Handle: %2$s \n Description: %3$s \n Post count: %4$s \n Endorse count: %5$s \n Comment count: %6$s",
+                        a.getId(),
+                        a.getHandle(), a.getDescription(), Integer.toString(postCount),
+                        Integer.toString(endorsementCount), Integer.toString(commentCount)); // Do post/endorsement
+                                                                                             // count later
                 return message;
             }
         }
-		throw new HandleNotRecognisedException("This handle was not recognised.");
-		
-	}
-   
+        throw new HandleNotRecognisedException("This handle was not recognised.");
+
+    }
 
     @Override
     public int createPost(String handle, String message) throws HandleNotRecognisedException, InvalidPostException {
@@ -132,7 +152,7 @@ public class SocialMedia implements SocialMediaPlatform {
                 user = account.getId();
             }
         }
-        if (user == -1 && handle != null) {
+        if (user == -1) {
             throw new HandleNotRecognisedException("Invalid Handle Provided");
         }
         if (message.length() == 0 || message.length() > 100) {
@@ -175,31 +195,56 @@ public class SocialMedia implements SocialMediaPlatform {
     public int commentPost(String handle, int id, String message) throws HandleNotRecognisedException,
             PostIDNotRecognisedException, NotActionablePostException, InvalidPostException {
         // TODO Auto-generated method stub
-        return 0;
+        int user = -1;
+        // Looks for the account with the passed in handle and sets user to that users
+        // id
+        for (Account account : Account.allAccounts) {
+            if (account.getHandle() == handle) {
+                user = account.getId();
+            }
+        }
+        if (user == -1) {
+            throw new HandleNotRecognisedException("Invalid Handle Provided");
+        }
+        Post thePost = null;
+        for (Post post : Post.allPosts) {
+            if (post.getId() == id) {
+                thePost = post;
+            }
+        }
+        // Checks if the post was found
+        if (thePost == null) {
+            throw new PostIDNotRecognisedException("Post not found");
+        }
+        // Checks if the post found was a endorsement
+        if (thePost instanceof Endorsement) {
+            throw new NotActionablePostException("Cant comment on an endorsement");
+        }
+        // Checks if the post is the empty post
+        if (thePost.getHandle() == null) {
+            throw new NotActionablePostException("Cant comment on an empty post");
+        }
+        // Checks if the message provide is valid
+        if (message == null || message.length() > 100) {
+            throw new InvalidPostException("Invalid message provided");
+        }
+        Comment comment = new Comment(handle, message, id);
+        return comment.getId();
     }
 
     @Override
     public void deletePost(int id) throws PostIDNotRecognisedException {
         // TODO Auto-generated method stub
-        int index = 0;
-        boolean deleted = false;
-        int emptyPost = -1;
+        Post emptyPost = null;
         for (Post post : Post.allPosts) {
-            if (post.getEmptyPost()) {
-                emptyPost = post.getId();
+            if (post.getHandle() == null) {
+                emptyPost = post;
             }
         }
-        if (emptyPost == -1) {
-            try {
-                emptyPost = createPost(null,
-                        "The original content was removed from the system and is no longer available.");
-            } catch (Exception e) {
-                throw new PostIDNotRecognisedException("Couldnt Create empty Post");
-            }
-        }
+        Post toRemove = null;
         for (Post post : Post.allPosts) {
             // Checks if the post is the empty post
-            if (!post.getEmptyPost()) {
+            if (post.getHandle() != null) {
 
                 // Checks if the post is an endorsement if it is checks if the endorsements
                 // parent is the post to delete
@@ -213,21 +258,22 @@ public class SocialMedia implements SocialMediaPlatform {
                 // Sets the parent of the comment to the empty post.
                 if (post instanceof Comment) {
                     Comment temp = (Comment) post;
-                    temp.ogID = emptyPost;
+                    temp.setParentId(emptyPost.getId());
                     // Might need to replace value in Post.allPosts with temo to update
 
                 }
                 // Post to delete found and removed
                 if (post.getId() == id) {
-                    Post.allPosts.remove(index);
-                    deleted = true;
+                    toRemove = post;
+
                 }
-                index++;
             }
         }
-        if (!deleted) {
+
+        if (toRemove == null) {
             throw new PostIDNotRecognisedException("Post To Be Deleted Not Found");
         }
+        Post.allPosts.remove(toRemove);
 
     }
 
@@ -251,7 +297,7 @@ public class SocialMedia implements SocialMediaPlatform {
             // Checks if post is an comment and checks if its parent is id
             if (post instanceof Comment) {
                 Comment temp = (Comment) post;
-                if (temp.ogID == id) {
+                if (temp.getParentId() == id) {
                     comments++;
                 }
             }
@@ -274,9 +320,9 @@ public class SocialMedia implements SocialMediaPlatform {
     }
 
     @Override
-	public int getNumberOfAccounts() {
-		return Account.allAccounts.size();
-	}
+    public int getNumberOfAccounts() {
+        return Account.allAccounts.size();
+    }
 
     @Override
     public int getTotalOriginalPosts() {
@@ -309,7 +355,13 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public int getTotalCommentPosts() {
         // TODO Auto-generated method stub
-        return 0;
+        int commentCount = 0;
+        for (Post post : Post.allPosts) {
+            if (post instanceof Comment) {
+                commentCount++;
+            }
+        }
+        return commentCount;
     }
 
     @Override
