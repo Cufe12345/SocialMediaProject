@@ -5,6 +5,7 @@ import socialmedia.SocialMedia;
 import socialmedia.IllegalHandleException;
 import socialmedia.InvalidHandleException;
 import socialmedia.InvalidPostException;
+import socialmedia.NotActionablePostException;
 import socialmedia.PostIDNotRecognisedException;
 import socialmedia.SocialMediaPlatform;
 
@@ -41,7 +42,7 @@ public class SocialMediaPlatformTestApp {
 			int result = platform.createPost("my_handle", "Pizza");
 			System.out.println(platform.showIndividualPost(result));
 			System.out.println(platform.getTotalOriginalPosts());
-			platform.deletePost(result);
+			int result2 = platform.commentPost("my_handle", result, "pizza");
 			System.out.println(platform.getTotalOriginalPosts());
 			assert (platform.getNumberOfAccounts() == 1) : "number of accounts registered in the system does not match";
 
@@ -60,6 +61,8 @@ public class SocialMediaPlatformTestApp {
 			assert (false) : "iuiisdi";
 		} catch (PostIDNotRecognisedException e) {
 			assert (false) : "jnsikd";
+		} catch (NotActionablePostException e) {
+			assert (false) : "isijdoiso";
 		}
 
 	}
