@@ -1,9 +1,14 @@
 import java.text.NumberFormat.Style;
 
+import javax.naming.InvalidNameException;
+
 import socialmedia.AccountIDNotRecognisedException;
 import socialmedia.SocialMedia;
 import socialmedia.IllegalHandleException;
 import socialmedia.InvalidHandleException;
+import socialmedia.InvalidPostException;
+import socialmedia.NotActionablePostException;
+import socialmedia.PostIDNotRecognisedException;
 import socialmedia.SocialMediaPlatform;
 import socialmedia.HandleNotRecognisedException;
 
@@ -40,18 +45,26 @@ public class SocialMediaPlatformTestApp1 {
 		Integer id2;
 		try {
 			id = platform.createAccount("my_handle", "hello, this is a new awesome account");
-			//assert (platform.getNumberOfAccounts() == 1) : "number of accounts registered in the system does not match";
-			id1 = platform.createAccount("my_handle1", "hello, this is a new awesome account, trust me");
-			//System.out.println(platform.showAccount("my_handle"));
-			platform.removeAccount("my_handle");
-			System.out.println(platform.getNumberOfAccounts());
-			id2 = platform.createAccount("my_handle3", "hello, this is a new awesome account, trust me");
-			System.out.println(platform.getNumberOfAccounts());
+			id1 = platform.createAccount("my_handle1", "hello, this is a new awesome account");
+			id2 = platform.createAccount("my_handle2", "hello, this is a new awesome account");
 
-			platform.removeAccount(id1);
+			platform.createPost("my_handle", "This is a post");
+			platform.createPost("my_handle1", "This is a post");
+			platform.createPost("my_handle1", "This is a post");
 
-			System.out.println(platform.getNumberOfAccounts());
-			assert (platform.getNumberOfAccounts() == 1) : "number of accounts registered in the system does not match";
+
+			platform.endorsePost("my_handle2", 0);
+			platform.endorsePost("my_handle2", 0);
+			platform.endorsePost("my_handle1", 0);
+			platform.endorsePost("my_handle", 1);
+			platform.endorsePost("my_handle", 1);
+			platform.endorsePost("my_handle", 2);
+			platform.endorsePost("my_handle", 2);
+
+
+			System.out.println(platform.getTotalEndorsmentPosts());
+			System.out.println(platform.getMostEndorsedAccount());
+			System.out.println(platform.getMostEndorsedPost());
 
 		} catch (IllegalHandleException e) {
 			System.out.println("Thrown");
@@ -59,12 +72,19 @@ public class SocialMediaPlatformTestApp1 {
 		} catch (InvalidHandleException e) {
 			System.out.println("Thrown yeayy");
 			assert (false) : "InvalidHandleException thrown incorrectly";
-		} catch (AccountIDNotRecognisedException e) {
+		} /*catch (AccountIDNotRecognisedException e) {
 			System.out.println("hello");
 			assert (false) : "AccountIDNotRecognizedException thrown incorrectly";
-		} catch (HandleNotRecognisedException e){
+		} */catch (HandleNotRecognisedException e){
 			assert (false) : "HandleNotRecognisedException thrown incorrectly";
-		} 
+		}  catch (InvalidPostException e){
+			assert (false) : "InvalidPostException thrown incorrectly";
+		} catch (NotActionablePostException e){
+			System.out.println("Non actionable bddddadadad");
+			assert (false) : "NotActionablePostException thrown incorrectly";
+		} catch (PostIDNotRecognisedException e){
+			assert (false) : "PostIDNotRecognisedException thrown incorrectly";
+		}
 
 	}
 
