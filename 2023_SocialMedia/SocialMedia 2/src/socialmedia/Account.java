@@ -1,4 +1,5 @@
 package socialmedia;
+
 import java.util.ArrayList;
 // Imported array list package. Check if it's allowed.
 
@@ -9,7 +10,8 @@ public class Account {
     private String description;
     private int accountId;
     public static ArrayList<Account> allAccounts = new ArrayList<Account>();
-    public static int nextAccountId=0;
+    public static int nextAccountId = 0;
+
     public Account(String handle) {
         this.handle = handle;
         this.description = "";
@@ -23,21 +25,24 @@ public class Account {
         this.accountId = nextAccountId++;
         allAccounts.add(this);
     }
-    public String getHandle(){
+
+    public String getHandle() {
         return this.handle;
     }
-    public int getId()
-    {
+
+    public int getId() {
         return this.accountId;
     }
-    public String getDescription()
-    {
+
+    public String getDescription() {
         return this.description;
     }
-    public void setDescription(String description){
+
+    public void setDescription(String description) {
         this.description = description;
     }
-    public void setHandle(String newHandle){
+
+    public void setHandle(String newHandle) {
         this.handle = newHandle;
     }
 }
