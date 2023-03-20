@@ -38,12 +38,29 @@ public class SocialMediaPlatformTestApp {
 
 		Integer id;
 		try {
-			id = platform.createAccount("my_handle");
-			int result = platform.createPost("my_handle", "Pizza");
-			System.out.println(platform.showIndividualPost(result));
-			System.out.println(platform.getTotalOriginalPosts());
-			int result2 = platform.commentPost("my_handle", result, "pizza");
-			System.out.println(platform.getTotalOriginalPosts());
+			id = platform.createAccount("user1");
+			Integer id2 = platform.createAccount("user2");
+			Integer id3 = platform.createAccount("user3");
+			Integer id4 = platform.createAccount("user4");
+			Integer id5 = platform.createAccount("user5");
+			// Create comments
+			int result = platform.createPost("user1", "Pepperoni pizza is best");
+			int result2 = platform.commentPost("user2", result, "Nah margaritia pizza is best");
+			int result3 = platform.commentPost("user1", result2, "u dumb");
+			int result4 = platform.commentPost("user2", result3, "no u");
+			int result5 = platform.commentPost("user3", result, "Facts");
+			int result6 = platform.commentPost("user5", result, "Poor");
+			int result7 = platform.commentPost("user1", result6, "u wrong");
+			// Create endorsements
+			int endorse1 = platform.endorsePost("user2", result);
+			int endorse2 = platform.endorsePost("user3", result);
+			int endorse3 = platform.endorsePost("user2", result5);
+			int endorse4 = platform.endorsePost("user3", result5);
+			int endorse5 = platform.endorsePost("user4", result5);
+			int endorse6 = platform.endorsePost("user5", result5);
+
+			System.out.println(platform.showPostChildrenDetails(result));
+
 			assert (platform.getNumberOfAccounts() == 1) : "number of accounts registered in the system does not match";
 
 			platform.removeAccount(id);
@@ -60,6 +77,7 @@ public class SocialMediaPlatformTestApp {
 		} catch (HandleNotRecognisedException e) {
 			assert (false) : "iuiisdi";
 		} catch (PostIDNotRecognisedException e) {
+			System.out.println("sfkjfndudfjdjifdio");
 			assert (false) : "jnsikd";
 		} catch (NotActionablePostException e) {
 			assert (false) : "isijdoiso";
