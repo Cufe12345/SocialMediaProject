@@ -171,23 +171,27 @@ public class SocialMedia implements SocialMediaPlatform {
             if (account.getHandle() == handle) {
                 endorsedUserId = account.getId();
             }
-        }   
-        for (Post post: Post.allPosts){
-            if (post.getId() == id){
+        }
+        for (Post post : Post.allPosts) {
+            if (post.getId() == id) {
                 endorsedPost = post;
             }
         }
-        if (endorsedUserId == -1){
+        if (endorsedUserId == -1) {
             throw new HandleNotRecognisedException("Handle was not recognised.");
         }
-        if (endorsedPost == null){
+        if (endorsedPost == null) {
             throw new PostIDNotRecognisedException("Post ID was not found nor recognised");
         }
-        if (endorsedPost instanceof Endorsement){
-            throw new NotActionablePostException("The post cannot be endorsed because it is an endorsement."); // Endorsements are not transitive?????
+        if (endorsedPost instanceof Endorsement) {
+            throw new NotActionablePostException("The post cannot be endorsed because it is an endorsement."); // Endorsements
+                                                                                                               // are
+                                                                                                               // not
+                                                                                                               // transitive?????
         }
-        Endorsement endorsementPost = new Endorsement(handle, endorsedPost.getMessage(), endorsedPost.getHandle(), endorsedPost.getId());
-        
+        Endorsement endorsementPost = new Endorsement(handle, endorsedPost.getMessage(), endorsedPost.getHandle(),
+                endorsedPost.getId());
+
         return endorsementPost.getId();
     }
 
@@ -244,6 +248,7 @@ public class SocialMedia implements SocialMediaPlatform {
         Post toRemove = null;
         for (Post post : Post.allPosts) {
             // Checks if the post is the empty post
+            System.out.println("Post: " + post.getHandle());
             if (post.getHandle() != null) {
 
                 // Checks if the post is an endorsement if it is checks if the endorsements
@@ -251,7 +256,7 @@ public class SocialMedia implements SocialMediaPlatform {
                 // then deletes it
                 if (post instanceof Endorsement) {
                     Endorsement temp = (Endorsement) post;
-                    if (temp.getOgId()== id) {
+                    if (temp.getOgId() == id) {
                         deletePost(temp.getId());
                     }
                 }
@@ -316,7 +321,38 @@ public class SocialMedia implements SocialMediaPlatform {
     public StringBuilder showPostChildrenDetails(int id)
             throws PostIDNotRecognisedException, NotActionablePostException {
         // TODO Auto-generated method stub
-        return null;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(showIndividualPost(id));
+        boolean commentAdded = false;
+        for (Post post : Post.allPosts) {
+            if (post.getId() == id) {
+                if (post instanceof Endorsement) {
+                    throw new NotActionablePostException("An endorsement post was provided");
+                }
+            }
+            if (post instanceof Comment) {
+                Comment comment = (Comment) post;
+                if (comment.getParentId() == id) {
+                    if (!commentAdded) {
+                        stringBuilder.append("\n|");
+                    }
+                    commentAdded = true;
+                    StringBuilder result = showPostChildrenDetails(post.getId());
+                    result.insert(0, "\n| > ");
+                    for (int i = 1; i < result.length(); i++) {
+                        if (result.charAt(i) == '\n') {
+                            // +1 for the spaces to be added after \n not before
+                            result.insert(i + 1, "    ");
+                        }
+                    }
+                    stringBuilder.append(result);
+                }
+            }
+        }
+        if (!commentAdded) {
+            stringBuilder.append("\n");
+        }
+        return stringBuilder;
     }
 
     @Override
@@ -343,9 +379,9 @@ public class SocialMedia implements SocialMediaPlatform {
 
     @Override
     public int getTotalEndorsmentPosts() { // testing needed
-        int endorsementCount=0;
-        for (Post post : Post.allPosts){
-            if(post instanceof Endorsement){
+        int endorsementCount = 0;
+        for (Post post : Post.allPosts) {
+            if (post instanceof Endorsement) {
                 endorsementCount++;
             }
         }
@@ -366,10 +402,11 @@ public class SocialMedia implements SocialMediaPlatform {
 
     @Override
     public int getMostEndorsedPost() { // testing needed
-        int mostEndorsedPostId=-1;
-        int maxNumberOfEndorsements=0;
-        for (Post post : Post.allPosts){ // This will go through endorsements as well however since we don't allow endorsement posts to be endorsed, it should return 0.
-            if (post.getNumberOfEndorsements() > maxNumberOfEndorsements){
+        int mostEndorsedPostId = -1;
+        int maxNumberOfEndorsements = 0;
+        for (Post post : Post.allPosts) { // This will go through endorsements as well however since we don't allow
+                                          // endorsement posts to be endorsed, it should return 0.
+            if (post.getNumberOfEndorsements() > maxNumberOfEndorsements) {
                 maxNumberOfEndorsements = post.getNumberOfEndorsements();
                 mostEndorsedPostId = post.getId();
             }
@@ -382,19 +419,19 @@ public class SocialMedia implements SocialMediaPlatform {
         // TODO Auto-generated method stub
         int maxEndorsements = 0;
         int maxEndorsementsId = -1;
-        for (Account account : Account.allAccounts){
-            //int maxEndorsements = 0;
-            
+        for (Account account : Account.allAccounts) {
+            // int maxEndorsements = 0;
+
             int endorsementCount = 0;
-            for (Post post : Post.allPosts){
+            for (Post post : Post.allPosts) {
                 if (post.getHandle() == account.getHandle()) {
-                   // There's probably a better way of doing this.
+                    // There's probably a better way of doing this.
                     endorsementCount += post.getNumberOfEndorsements();
-                  
+
                 }
-                
+
             }
-            if (endorsementCount >= maxEndorsements){
+            if (endorsementCount >= maxEndorsements) {
                 maxEndorsementsId = account.getId();
                 maxEndorsements = endorsementCount;
             }
