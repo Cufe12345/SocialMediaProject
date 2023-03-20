@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.text.NumberFormat.Style;
 
 import javax.naming.InvalidNameException;
@@ -49,22 +50,35 @@ public class SocialMediaPlatformTestApp1 {
 			id2 = platform.createAccount("my_handle2", "hello, this is a new awesome account");
 
 			platform.createPost("my_handle", "This is a post");
-			platform.createPost("my_handle1", "This is a post");
-			platform.createPost("my_handle1", "This is a post");
+			platform.createPost("my_handle1", "This is a post1");
+			platform.createPost("my_handle1", "This is a post2");
 
 
-			platform.endorsePost("my_handle2", 0);
-			platform.endorsePost("my_handle2", 0);
-			platform.endorsePost("my_handle1", 0);
+			platform.endorsePost("my_handle2", 1);
+			platform.endorsePost("my_handle2", 1);
+			platform.endorsePost("my_handle1", 1);
 			platform.endorsePost("my_handle", 1);
 			platform.endorsePost("my_handle", 1);
 			platform.endorsePost("my_handle", 2);
 			platform.endorsePost("my_handle", 2);
 
-
-			System.out.println(platform.getTotalEndorsmentPosts());
-			System.out.println(platform.getMostEndorsedAccount());
+			platform.commentPost("my_handle2", 1, "hello");
+			System.out.println(platform.getNumberOfAccounts());
+			System.out.println(platform.showIndividualPost(1));
+			System.out.println(platform.getTotalOriginalPosts());
 			System.out.println(platform.getMostEndorsedPost());
+
+
+			platform.savePlatform("FirstSocialMedia.ser");
+
+			platform.erasePlatform();
+
+			
+
+			platform.loadPlatform("FirstSocialMedia.ser");
+
+			System.out.println(platform.showIndividualPost(1));
+
 
 		} catch (IllegalHandleException e) {
 			System.out.println("Thrown");
@@ -83,7 +97,13 @@ public class SocialMediaPlatformTestApp1 {
 			System.out.println("Non actionable bddddadadad");
 			assert (false) : "NotActionablePostException thrown incorrectly";
 		} catch (PostIDNotRecognisedException e){
+			System.out.println("gdfghdfs");
 			assert (false) : "PostIDNotRecognisedException thrown incorrectly";
+		} catch (IOException e){
+			System.out.println("hellojjj");
+			assert (false) : "IOException thrown incorrectly";
+		} catch(ClassNotFoundException e){
+			System.out.println("hello");
 		}
 
 	}
