@@ -4,8 +4,8 @@ public class Comment extends Post {
     private int parentId;
 
 
-    public Comment(String handle, String message, int parentId) {
-        super(handle, message);
+    public Comment(String handle, String message, int parentId,int nextPostId) {
+        super(handle, message,nextPostId);
         this.parentId = parentId;
     }
 

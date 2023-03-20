@@ -4,8 +4,8 @@ public class Endorsement extends Post {
     private int ogPostId;
     
 
-    public Endorsement(String handle, String message, String ogHandle, int ogId) {
-        super(handle, String.format("EP@%1$s: %2$s", ogHandle, message));
+    public Endorsement(String handle, String message, String ogHandle, int ogId,int nextPostId) {
+        super(handle, String.format("EP@%1$s: %2$s", ogHandle, message),nextPostId);
         this.ogPostId = ogId;
         
         
