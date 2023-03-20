@@ -4,26 +4,25 @@ import java.util.ArrayList;
 // Imported array list package. Check if it's allowed.
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Account {
+public class Account implements Serializable {
     private String handle;
     private String description;
     private int accountId;
-    public static ArrayList<Account> allAccounts = new ArrayList<Account>();
-    public static int nextAccountId = 0;
+    
+    
 
-    public Account(String handle) {
+    public Account(String handle,int nextAccountId) {
         this.handle = handle;
         this.description = "";
-        this.accountId = nextAccountId++;
-        allAccounts.add(this);
+        this.accountId = nextAccountId;
     }
 
-    public Account(String handle, String description) {
+    public Account(String handle, String description,int nextAccountId) {
         this.handle = handle;
         this.description = description;
-        this.accountId = nextAccountId++;
-        allAccounts.add(this);
+        this.accountId = nextAccountId;
     }
 
     public String getHandle() {
