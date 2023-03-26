@@ -30,6 +30,9 @@ public class Post implements Serializable {
         return message;
     }
 
+    public void setHandle(String handle){
+        this.handle = handle;
+    }
    
     
 
