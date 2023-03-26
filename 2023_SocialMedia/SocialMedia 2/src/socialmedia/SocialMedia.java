@@ -20,22 +20,21 @@ import java.io.File;
 public class SocialMedia implements SocialMediaPlatform {
     public ArrayList<Account> allAccounts = new ArrayList<Account>();
     public ArrayList<Post> allPosts = new ArrayList<Post>();
-
     public int nextPostId = 1;
+
     public int nextAccountId = 0;
 
     @Override
     public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
         for (Account a : allAccounts) {
-            if (a.getHandle() == handle) // Lowercase maybe
+            if (handle.equals(a.getHandle())) // If there exists and account with the same handle, it throws the illegal handle exception.
             {
                 throw new IllegalHandleException("This handle is already being used by another account.");
             }
         }
-        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // The system limit of characters
-                                                                                     // may not be 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
-                                                                        // condition.
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // Checks that the handle is valid for all conditions.
+                                                                                     
+            throw new InvalidHandleException("This handle is invalid"); 
         }
         Account newAccount = new Account(handle, nextAccountId);
         nextAccountId++;
@@ -47,17 +46,17 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public int createAccount(String handle, String description) throws IllegalHandleException, InvalidHandleException {
         for (Account a : allAccounts) {
-            if (a.getHandle() == handle) // Lowercase maybe
+            if (handle.equals(a.getHandle())) // If there exists and account with the same handle, it throws the illegal handle exception.
             {
                 throw new IllegalHandleException("This handle is already being used by another account.");
             }
         }
-        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // The system limit of characters
-                                                                                     // may not be 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
-                                                                        // condition.
+        if (handle.length() == 0 || handle.length() > 100 || handle.contains(" ")) { // Checks that the handle is valid for all conditions.
+                                                                                    
+            throw new InvalidHandleException("This handle is invalid"); 
+                                                                        
         }
-        Account newAccount = new Account(handle, description, nextAccountId);
+        Account newAccount = new Account(handle, description,nextAccountId); // Creates a new account with the corresponding description
         nextAccountId++;
         allAccounts.add(newAccount);
         return newAccount.getId();
@@ -66,29 +65,42 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public void removeAccount(int id) throws AccountIDNotRecognisedException {
         for (Account a : allAccounts) {
-            if (a.getId() == id) {
-                allAccounts.remove(a); // This may not work?
+            if (a.getId() == id) { // Goes through all the accounts and removes the account with its corresponding id.
+                String handle = a.getHandle();
+                allAccounts.remove(a); // 
+                for (Post p : allPosts){
+                    if (handle.equals(p.getHandle())){ // Remove all posts associated with that account.
+                        // Since we already know these posts exist, the exception will not be thrown.
+                        try{deletePost(p.getId());}
+                        catch (PostIDNotRecognisedException e){}
+                    }
+                }
                 return;
+
             }
         }
+        // If not returned, then the account will not have been found so the exception needs to be thrown.
         throw new AccountIDNotRecognisedException("This ID was not recognised.");
     }
 
     @Override
     public void removeAccount(String handle) throws HandleNotRecognisedException {
-        for (Account a : allAccounts) { // Remove all posts associated with that account. IMPORTANT
-            if (a.getHandle() == handle) {
-                allAccounts.remove(a); // This may not work?
-                for (Post p : allPosts) {
-                    if (p.getHandle() == handle) {
-                        // remove post
+
+        for (Account a : allAccounts) { 
+            if (handle.equals(a.getHandle())) { // Goes through all the accounts and removes the account with its corresponding id.
+                allAccounts.remove(a);
+                for (Post p : allPosts){
+                    if (handle.equals(p.getHandle())){ // Remove all posts associated with that account.
+                        // Since we already know these posts exist, the exception will not be thrown.
+                        try{deletePost(p.getId());} 
+                        catch (PostIDNotRecognisedException e){}
                     }
                 }
-                return; // This might be a bad way of doing it, otherwise have a boolean variable UPDATE
-                        // 15.03.2023: This is a bad way of doing it... do it better. Actually might be
-                        // ok
+                return; 
+
             }
         }
+        // If not returned, then the account will not have been found so the exception needs to be thrown.
         throw new HandleNotRecognisedException("The handle was not recognised.");
 
     }
@@ -96,26 +108,30 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public void changeAccountHandle(String oldHandle, String newHandle)
             throws HandleNotRecognisedException, IllegalHandleException, InvalidHandleException {
-        Account tempAccount = null; // The account handle will need to be updated in posts as well. Has not been
-                                    // done yet. Very important to do.
+
+        Account tempAccount = null;
         for (Account a : allAccounts) {
-            if (a.getHandle() == newHandle) {
+            if (newHandle.equals(a.getHandle())) { // Checks if the new handle already exists so that it won't share a handle with another account
                 throw new IllegalHandleException("Handle already taken");
             }
-            if (a.getHandle() == oldHandle) {
+            if (oldHandle.equals(a.getHandle())) { // Finds the account which has the old handle so that it can be changed.
                 tempAccount = a;
             }
         }
-        if (newHandle.length() == 0 || newHandle.length() > 100 || newHandle.contains(" ")) { // The system limit of
-                                                                                              // characters may not be
-                                                                                              // 100 characters.
-            throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
-                                                                        // condition.
+        if (newHandle.length() == 0 || newHandle.length() > 100 || newHandle.contains(" ")) { // Checks that the new handle is valid for all conditions.
+                                                                                              
+            throw new InvalidHandleException("This handle is invalid"); 
+                                    
         }
-        if (tempAccount == null) {
+        if (tempAccount == null) { // If no account had been found, then the tempAccount variable will still be null.
             throw new HandleNotRecognisedException("Account handle not recognised");
         } else {
             tempAccount.setHandle(newHandle);
+        }
+        for (Post p: allPosts){ // Finds all posts with the old handle and replaces the associated handle with the new one.
+            if (oldHandle.equals(p.getHandle())){
+                p.setHandle(newHandle);
+            }
         }
 
     }
@@ -123,44 +139,41 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public void updateAccountDescription(String handle, String description) throws HandleNotRecognisedException {
         for (Account a : allAccounts) {
-            if (a.getHandle() == handle) {
-                a.setDescription(description); // This may not work?
-                return; // This might be a bad way of doing it, otherwise have a boolean variable
+
+            if (handle.equals(a.getHandle())) { // Finds the account with the handle and sets the new handle.
+                a.setDescription(description); 
+                return; 
             }
         }
+        // If not returned, then no account with that handle has been found so the exception will be thrown
         throw new HandleNotRecognisedException("The handle was not recognised.");
     }
 
     @Override
     public String showAccount(String handle) throws HandleNotRecognisedException {
         String message = "";
-        int commentCount = 0;
         int endorsementCount = 0;
         int postCount = 0;
-        for (Post post : allPosts) {
-            if (post.getHandle() == handle) {
+        for (Post post : allPosts) { // Counts the endorsements, posts and comments so that it can be outputted later.
+            if (handle.equals(post.getHandle())) {
                 if (post instanceof Endorsement) {
                     endorsementCount++;
-                    continue;
-                }
-                if (post instanceof Comment) {
-                    commentCount++;
-                    continue;
                 }
                 postCount++;
             }
         }
         for (Account a : allAccounts) {
-            if (a.getHandle() == handle) {
+            if (handle.equals(a.getHandle())) {
                 message = String.format(
-                        "ID: %1$s \n Handle: %2$s \n Description: %3$s \n Post count: %4$s \n Endorse count: %5$s \n Comment count: %6$s",
+                        "ID: %1$s \n Handle: %2$s \n Description: %3$s \n Post count: %4$s \n Endorse count: %5$s",
                         a.getId(),
                         a.getHandle(), a.getDescription(), Integer.toString(postCount),
-                        Integer.toString(endorsementCount), Integer.toString(commentCount)); // Do post/endorsement
-                                                                                             // count later
+                        Integer.toString(endorsementCount));
+                                                                                             
                 return message;
             }
         }
+        // If message was not returned, then no account with that handle has been found so the exception will be thrown
         throw new HandleNotRecognisedException("This handle was not recognised.");
 
     }
@@ -171,7 +184,7 @@ public class SocialMedia implements SocialMediaPlatform {
         // Looks for the account with the passed in handle and sets user to that users
         // id
         for (Account account : allAccounts) {
-            if (account.getHandle() == handle) {
+            if (handle.equals(account.getHandle())) {
                 user = account.getId();
             }
         }
@@ -194,28 +207,30 @@ public class SocialMedia implements SocialMediaPlatform {
         int endorsedUserId = -1;
         Post endorsedPost = null;
         for (Account account : allAccounts) {
-            if (account.getHandle() == handle) {
+            if (handle.equals(account.getHandle())) {
                 endorsedUserId = account.getId();
             }
 
-        }
-        for (Post post : allPosts) {
-            if (post.getId() == id) {
+
+        }   
+        for (Post post: allPosts){ // Checks all the posts and finds the post with the corrsponding id and set the post for endorsement.
+            if (post.getId() == id){
+
+
 
                 endorsedPost = post;
             }
         }
-        if (endorsedUserId == -1) {
+        if (endorsedUserId == -1) { // If no account was found the id will not change from -1 so the handle was not recognised.
             throw new HandleNotRecognisedException("Handle was not recognised.");
         }
-        if (endorsedPost == null) {
+        if (endorsedPost == null) { // If the endorsed post was not found, the exception should be thrown
             throw new PostIDNotRecognisedException("Post ID was not found nor recognised");
         }
-        if (endorsedPost instanceof Endorsement) {
-            throw new NotActionablePostException("The post cannot be endorsed because it is an endorsement."); // Endorsements
-                                                                                                               // are
-                                                                                                               // not
-                                                                                                               // transitive?????
+        if (endorsedPost instanceof Endorsement) { // Users cannot endorse an endorsement.
+            throw new NotActionablePostException("The post cannot be endorsed because it is an endorsement.");
+                                                                                                              
+
         }
         // Creates the endorsement and adds it to the allPosts array also increments
         // nextPostId
@@ -235,7 +250,7 @@ public class SocialMedia implements SocialMediaPlatform {
         // Looks for the account with the passed in handle and sets user to that users
         // id
         for (Account account : allAccounts) {
-            if (account.getHandle() == handle) {
+            if (handle.equals(account.getHandle())) {
                 user = account.getId();
             }
         }
@@ -282,16 +297,18 @@ public class SocialMedia implements SocialMediaPlatform {
                 emptyPost = post;
             }
         }
+
         // if emptyPost isnt found it hasnt been added to allPosts yet so add it and set
         // emptyPost
         if (emptyPost == null) {
             allPosts.add(Post.emptyPost);
             emptyPost = Post.emptyPost;
+
         }
         Post toRemove = null;
         for (Post post : allPosts) {
             // Checks if the post is the empty post
-            System.out.println("Post: " + post.getHandle());
+            //System.out.println("Post: " + post.getHandle());
             if (post.getHandle() != null) {
 
                 // Checks if the post is an endorsement if it is checks if the endorsements
@@ -372,7 +389,9 @@ public class SocialMedia implements SocialMediaPlatform {
         stringBuilder.append(showIndividualPost(id));
         boolean commentAdded = false;
         for (Post post : allPosts) {
+
             // An endorsement post id was provided
+
             if (post.getId() == id) {
                 if (post instanceof Endorsement) {
                     throw new NotActionablePostException("An endorsement post was provided");
@@ -430,7 +449,9 @@ public class SocialMedia implements SocialMediaPlatform {
             if (post instanceof Comment) {
                 continue;
             }
-            if (post.getHandle() == null) {
+
+            if(post.getHandle() == null){
+
                 continue;
             }
             postCount++;
@@ -440,11 +461,12 @@ public class SocialMedia implements SocialMediaPlatform {
     }
 
     @Override
-    public int getTotalEndorsmentPosts() { // testing needed
 
-        int endorsementCount = 0;
-        for (Post post : allPosts) {
-            if (post instanceof Endorsement) {
+    public int getTotalEndorsmentPosts() { 
+        int endorsementCount=0;
+        for (Post post : allPosts){
+            if(post instanceof Endorsement){ // If the Post is also an instance of the child class endorsement, it will increment the number of endorsements
+
 
                 endorsementCount++;
             }
@@ -466,13 +488,14 @@ public class SocialMedia implements SocialMediaPlatform {
     }
 
     @Override
-    public int getMostEndorsedPost() { // testing needed
+    public int getMostEndorsedPost() {
 
-        int mostEndorsedPostId = -1;
-        int maxNumberOfEndorsements = 0;
-        for (Post post : allPosts) { // This will go through endorsements as well however since we don't allow
-                                     // endorsement posts to be endorsed, it should return 0.
-            if (getNumberOfEndorsements(post.getId()) > maxNumberOfEndorsements) {
+
+        int mostEndorsedPostId=-1;
+        int maxNumberOfEndorsements=0;
+        for (Post post : allPosts){ // This will go through endorsements as well however since endorsement posts cannot be endorsed, it should return 0.
+            if (getNumberOfEndorsements(post.getId()) > maxNumberOfEndorsements){ // If the next post has more endorsements, than the max, it should replace the max
+
                 maxNumberOfEndorsements = getNumberOfEndorsements(post.getId());
 
                 mostEndorsedPostId = post.getId();
@@ -482,16 +505,16 @@ public class SocialMedia implements SocialMediaPlatform {
     }
 
     @Override
-    public int getMostEndorsedAccount() { // TESTING DEFINITELY NEEDED
+    public int getMostEndorsedAccount() { 
         // TODO Auto-generated method stub
         int maxEndorsements = 0;
         int maxEndorsementsId = -1;
 
-        for (Account account : allAccounts) {
-            // int maxEndorsements = 0;
 
+        for (Account account : allAccounts){            
             int endorsementCount = 0;
-            for (Post post : allPosts) {
+            for (Post post : allPosts){ // Goes through the posts of every account, counting the endorsements for each post.
+
                 if (post.getHandle() == account.getHandle()) {
                     // There's probably a better way of doing this.
                     endorsementCount += getNumberOfEndorsements(post.getId());
@@ -499,7 +522,7 @@ public class SocialMedia implements SocialMediaPlatform {
                 }
 
             }
-            if (endorsementCount >= maxEndorsements) {
+            if (endorsementCount >= maxEndorsements) { // If the endorsement count for an account is greater than the max, then that account shall be the new max
                 maxEndorsementsId = account.getId();
                 maxEndorsements = endorsementCount;
             }
@@ -510,36 +533,48 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public void erasePlatform() {
         // TODO Auto-generated method stub
-        this.allAccounts = new ArrayList<Account>();
-        this.allPosts = new ArrayList<Post>();
-        this.nextPostId = 1;
-        this.nextAccountId = 0;
+
+        this.allAccounts = new ArrayList<Account>(); // Resets all of the variables to what they were orginally
+        this.allPosts = new ArrayList<Post>(); // Any existing data will have been overrided.
+        this.nextPostId =1;
+        this.nextAccountId=0;
+
 
     }
 
     @Override
-    public void savePlatform(String filename) throws IOException { // Should the file name include the .ser extension
+    public void savePlatform(String filename) throws IOException { // WHERE SHOULD IT BE SAVED RELATIVE TO THE SCRIPTS
         // TODO Auto-generated method stub
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("./" + filename));
-        out.writeObject(this);
-        out.close();
+
+       ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("./"+filename)); // Saves the platform as an object to a ser file.
+       out.writeObject(this);
+       out.close();
+    
+       
+
 
     }
 
     @Override
     public void loadPlatform(String filename) throws IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream("./" + filename));
+
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream("./"+filename)); // Reads from the file and loads in the platform as an object
+
         SocialMedia loadedSocialMedia = (SocialMedia) in.readObject();
+        
+        // Sets all the attributes to the variables saved in the file so that it can be fully loaded in.
         this.allAccounts = loadedSocialMedia.allAccounts;
         this.allPosts = loadedSocialMedia.allPosts;
 
+        this.nextAccountId = loadedSocialMedia.nextAccountId;
+        this.nextPostId = loadedSocialMedia.nextPostId;
     }
+    public int getNumberOfEndorsements(int id){
+        int endorsementCount=0;
+        for (Post post : allPosts){
+            if (post instanceof Endorsement){ // When the post is an endorsement of the post with the given id, the count will be incremented.
 
-    public int getNumberOfEndorsements(int id) {
-        int endorsementCount = 0;
-        for (Post post : allPosts) {
-            if (post instanceof Endorsement) {
                 Endorsement endorsementPost = (Endorsement) post;
                 if (endorsementPost.getOgId() == id) {
                     endorsementCount++;
