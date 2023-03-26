@@ -20,11 +20,9 @@ import java.io.File;
 public class SocialMedia implements SocialMediaPlatform {
     public ArrayList<Account> allAccounts = new ArrayList<Account>();
     public ArrayList<Post> allPosts = new ArrayList<Post>();
+
     public int nextPostId = 1;
     public int nextAccountId = 0;
-    
-
-
 
     @Override
     public int createAccount(String handle) throws IllegalHandleException, InvalidHandleException {
@@ -39,7 +37,7 @@ public class SocialMedia implements SocialMediaPlatform {
             throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
                                                                         // condition.
         }
-        Account newAccount = new Account(handle,nextAccountId);
+        Account newAccount = new Account(handle, nextAccountId);
         nextAccountId++;
         allAccounts.add(newAccount);
         return newAccount.getId();
@@ -59,7 +57,7 @@ public class SocialMedia implements SocialMediaPlatform {
             throw new InvalidHandleException("This handle is invalid"); // Maybe have a different message for each
                                                                         // condition.
         }
-        Account newAccount = new Account(handle, description,nextAccountId);
+        Account newAccount = new Account(handle, description, nextAccountId);
         nextAccountId++;
         allAccounts.add(newAccount);
         return newAccount.getId();
@@ -81,12 +79,14 @@ public class SocialMedia implements SocialMediaPlatform {
         for (Account a : allAccounts) { // Remove all posts associated with that account. IMPORTANT
             if (a.getHandle() == handle) {
                 allAccounts.remove(a); // This may not work?
-                for (Post p : allPosts){
-                    if (p.getHandle() == handle){
+                for (Post p : allPosts) {
+                    if (p.getHandle() == handle) {
                         // remove post
                     }
                 }
-                return; // This might be a bad way of doing it, otherwise have a boolean variable UPDATE 15.03.2023: This is a bad way of doing it... do it better. Actually might be ok
+                return; // This might be a bad way of doing it, otherwise have a boolean variable UPDATE
+                        // 15.03.2023: This is a bad way of doing it... do it better. Actually might be
+                        // ok
             }
         }
         throw new HandleNotRecognisedException("The handle was not recognised.");
@@ -96,7 +96,8 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public void changeAccountHandle(String oldHandle, String newHandle)
             throws HandleNotRecognisedException, IllegalHandleException, InvalidHandleException {
-        Account tempAccount = null; // The account handle will need to be updated in posts as well. Has not been done yet. Very important to do.
+        Account tempAccount = null; // The account handle will need to be updated in posts as well. Has not been
+                                    // done yet. Very important to do.
         for (Account a : allAccounts) {
             if (a.getHandle() == newHandle) {
                 throw new IllegalHandleException("Handle already taken");
@@ -130,7 +131,6 @@ public class SocialMedia implements SocialMediaPlatform {
         throw new HandleNotRecognisedException("The handle was not recognised.");
     }
 
-    // Callum Add Post Count
     @Override
     public String showAccount(String handle) throws HandleNotRecognisedException {
         String message = "";
@@ -181,7 +181,8 @@ public class SocialMedia implements SocialMediaPlatform {
         if (message.length() == 0 || message.length() > 100) {
             throw new InvalidPostException("Invalid Message Length");
         }
-        Post post = new Post(handle, message,nextPostId);
+        // Creates a post and adds it the allPosts array also increments nextPostId
+        Post post = new Post(handle, message, nextPostId);
         nextPostId++;
         allPosts.add(post);
         return post.getId();
@@ -197,9 +198,9 @@ public class SocialMedia implements SocialMediaPlatform {
                 endorsedUserId = account.getId();
             }
 
-        }   
-        for (Post post: allPosts){
-            if (post.getId() == id){
+        }
+        for (Post post : allPosts) {
+            if (post.getId() == id) {
 
                 endorsedPost = post;
             }
@@ -216,11 +217,12 @@ public class SocialMedia implements SocialMediaPlatform {
                                                                                                                // not
                                                                                                                // transitive?????
         }
-
-        Endorsement endorsementPost = new Endorsement(handle, endorsedPost.getMessage(), endorsedPost.getHandle(), endorsedPost.getId(),nextPostId);
+        // Creates the endorsement and adds it to the allPosts array also increments
+        // nextPostId
+        Endorsement endorsementPost = new Endorsement(handle, endorsedPost.getMessage(), endorsedPost.getHandle(),
+                endorsedPost.getId(), nextPostId);
         nextPostId++;
         allPosts.add(endorsementPost);
-        
 
         return endorsementPost.getId();
     }
@@ -262,7 +264,9 @@ public class SocialMedia implements SocialMediaPlatform {
         if (message == null || message.length() > 100) {
             throw new InvalidPostException("Invalid message provided");
         }
-        Comment comment = new Comment(handle, message, id,nextPostId);
+        // Creates a comment and adds it to the allPosts array also increments
+        // nextPostId
+        Comment comment = new Comment(handle, message, id, nextPostId);
         nextPostId++;
         allPosts.add(comment);
         return comment.getId();
@@ -272,10 +276,17 @@ public class SocialMedia implements SocialMediaPlatform {
     public void deletePost(int id) throws PostIDNotRecognisedException {
         // TODO Auto-generated method stub
         Post emptyPost = null;
+        // Looks for empty post
         for (Post post : allPosts) {
             if (post.getHandle() == null) {
                 emptyPost = post;
             }
+        }
+        // if emptyPost isnt found it hasnt been added to allPosts yet so add it and set
+        // emptyPost
+        if (emptyPost == null) {
+            allPosts.add(Post.emptyPost);
+            emptyPost = Post.emptyPost;
         }
         Post toRemove = null;
         for (Post post : allPosts) {
@@ -296,10 +307,9 @@ public class SocialMedia implements SocialMediaPlatform {
                 if (post instanceof Comment) {
                     Comment temp = (Comment) post;
                     temp.setParentId(emptyPost.getId());
-                    // Might need to replace value in allPosts with temo to update
 
                 }
-                // Post to delete found and removed
+                // Post to delete found
                 if (post.getId() == id) {
                     toRemove = post;
 
@@ -310,6 +320,7 @@ public class SocialMedia implements SocialMediaPlatform {
         if (toRemove == null) {
             throw new PostIDNotRecognisedException("Post To Be Deleted Not Found");
         }
+        // delete post by removing reference to it
         allPosts.remove(toRemove);
 
     }
@@ -343,6 +354,7 @@ public class SocialMedia implements SocialMediaPlatform {
         if (thePost == null) {
             throw new PostIDNotRecognisedException("Post Not Found");
         }
+        // Creates the output in specified structure
         String output = "ID: " + Integer.toString(thePost.getId()) + "\nAccount: " + thePost.getHandle()
                 + "\nNo. endorsements: " + Integer.toString(endorsements) + " | No. comments: "
                 + Integer.toString(comments) + "\n" + thePost.getMessage();
@@ -353,34 +365,48 @@ public class SocialMedia implements SocialMediaPlatform {
     public StringBuilder showPostChildrenDetails(int id)
             throws PostIDNotRecognisedException, NotActionablePostException {
         // TODO Auto-generated method stub
+        // A Recursive algorithm to generate the postChildrenDetails structure
+
         StringBuilder stringBuilder = new StringBuilder();
+        // Adds individual post string to the string builder
         stringBuilder.append(showIndividualPost(id));
         boolean commentAdded = false;
-        for (Post post : Post.allPosts) {
+        for (Post post : allPosts) {
+            // An endorsement post id was provided
             if (post.getId() == id) {
                 if (post instanceof Endorsement) {
                     throw new NotActionablePostException("An endorsement post was provided");
                 }
             }
+            // checks if post is a comment
             if (post instanceof Comment) {
                 Comment comment = (Comment) post;
+                // Checks if the comments parent is this post
                 if (comment.getParentId() == id) {
+                    // Used to make sure the output is structured correctly ie looks right
                     if (!commentAdded) {
                         stringBuilder.append("\n|");
                     }
                     commentAdded = true;
+                    // calls this method again with the comment being the post and finding children
+                    // of this comment
                     StringBuilder result = showPostChildrenDetails(post.getId());
+                    // adds this string to start of result so output is structured correctly
                     result.insert(0, "\n| > ");
+                    // Adds the relevant spaces so its indented correctly so has a tree like
+                    // structure
                     for (int i = 1; i < result.length(); i++) {
                         if (result.charAt(i) == '\n') {
                             // +1 for the spaces to be added after \n not before
                             result.insert(i + 1, "    ");
                         }
                     }
+                    // Adds the result to the string builder
                     stringBuilder.append(result);
                 }
             }
         }
+        // So output looks correct ie new lines where there should be
         if (!commentAdded) {
             stringBuilder.append("\n");
         }
@@ -404,7 +430,11 @@ public class SocialMedia implements SocialMediaPlatform {
             if (post instanceof Comment) {
                 continue;
             }
+            if (post.getHandle() == null) {
+                continue;
+            }
             postCount++;
+
         }
         return postCount;
     }
@@ -412,9 +442,9 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public int getTotalEndorsmentPosts() { // testing needed
 
-        int endorsementCount=0;
-        for (Post post : allPosts){
-            if(post instanceof Endorsement){
+        int endorsementCount = 0;
+        for (Post post : allPosts) {
+            if (post instanceof Endorsement) {
 
                 endorsementCount++;
             }
@@ -426,6 +456,7 @@ public class SocialMedia implements SocialMediaPlatform {
     public int getTotalCommentPosts() {
         // TODO Auto-generated method stub
         int commentCount = 0;
+        // Counts all the comment posts
         for (Post post : allPosts) {
             if (post instanceof Comment) {
                 commentCount++;
@@ -437,10 +468,11 @@ public class SocialMedia implements SocialMediaPlatform {
     @Override
     public int getMostEndorsedPost() { // testing needed
 
-        int mostEndorsedPostId=-1;
-        int maxNumberOfEndorsements=0;
-        for (Post post : allPosts){ // This will go through endorsements as well however since we don't allow endorsement posts to be endorsed, it should return 0.
-            if (getNumberOfEndorsements(post.getId()) > maxNumberOfEndorsements){
+        int mostEndorsedPostId = -1;
+        int maxNumberOfEndorsements = 0;
+        for (Post post : allPosts) { // This will go through endorsements as well however since we don't allow
+                                     // endorsement posts to be endorsed, it should return 0.
+            if (getNumberOfEndorsements(post.getId()) > maxNumberOfEndorsements) {
                 maxNumberOfEndorsements = getNumberOfEndorsements(post.getId());
 
                 mostEndorsedPostId = post.getId();
@@ -455,15 +487,14 @@ public class SocialMedia implements SocialMediaPlatform {
         int maxEndorsements = 0;
         int maxEndorsementsId = -1;
 
-        for (Account account : allAccounts){
-            //int maxEndorsements = 0;
-            
+        for (Account account : allAccounts) {
+            // int maxEndorsements = 0;
+
             int endorsementCount = 0;
-            for (Post post : allPosts){
+            for (Post post : allPosts) {
                 if (post.getHandle() == account.getHandle()) {
-                   // There's probably a better way of doing this.
+                    // There's probably a better way of doing this.
                     endorsementCount += getNumberOfEndorsements(post.getId());
-                  
 
                 }
 
@@ -481,40 +512,39 @@ public class SocialMedia implements SocialMediaPlatform {
         // TODO Auto-generated method stub
         this.allAccounts = new ArrayList<Account>();
         this.allPosts = new ArrayList<Post>();
-        this.nextPostId =1;
-        this.nextAccountId=0;
+        this.nextPostId = 1;
+        this.nextAccountId = 0;
 
     }
 
     @Override
     public void savePlatform(String filename) throws IOException { // Should the file name include the .ser extension
         // TODO Auto-generated method stub
-       ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("./"+filename)); 
-       out.writeObject(this);
-       out.close();
-    
-       
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("./" + filename));
+        out.writeObject(this);
+        out.close();
 
     }
 
     @Override
     public void loadPlatform(String filename) throws IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream("./"+filename));
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream("./" + filename));
         SocialMedia loadedSocialMedia = (SocialMedia) in.readObject();
         this.allAccounts = loadedSocialMedia.allAccounts;
         this.allPosts = loadedSocialMedia.allPosts;
-        
+
     }
-    public int getNumberOfEndorsements(int id){
-        int endorsementCount=0;
-        for (Post post : allPosts){
-            if (post instanceof Endorsement){
+
+    public int getNumberOfEndorsements(int id) {
+        int endorsementCount = 0;
+        for (Post post : allPosts) {
+            if (post instanceof Endorsement) {
                 Endorsement endorsementPost = (Endorsement) post;
-                if (endorsementPost.getOgId() == id){
+                if (endorsementPost.getOgId() == id) {
                     endorsementCount++;
                 }
-                
+
             }
         }
         return endorsementCount;
